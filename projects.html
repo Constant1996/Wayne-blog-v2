@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Library - Neural Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --neon-purple: #b300ff;
+            --dark-bg: #0a0a0f;
+            --card-bg: #12121a;
+            --text-primary: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(179, 0, 255, 0.1) 0%, transparent 100%);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: all 0.3s;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--neon-cyan);
+            transition: width 0.3s;
+        }
+
+        nav a:hover::after,
+        nav a.active::after {
+            width: 100%;
+        }
+
+        nav a:hover {
+            color: var(--neon-cyan);
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            color: var(--neon-cyan);
+        }
+
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .category-tab {
+            background: transparent;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: var(--text-primary);
+            padding: 0.75rem 1.5rem;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-tab:hover,
+        .category-tab.active {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+            border-color: var(--neon-cyan);
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(179, 0, 255, 0.3);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 15px 50px rgba(0, 255, 255, 0.2);
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple));
+        }
+
+        .project-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .project-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            color: var(--neon-pink);
+            margin-bottom: 0.75rem;
+        }
+
+        .project-description {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tag {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-family: 'Orbitron', monospace;
+            color: var(--neon-cyan);
+        }
+
+        .project-btn {
+            background: transparent;
+            border: 2px solid var(--neon-purple);
+            color: var(--neon-purple);
+            padding: 0.75rem 1.5rem;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .project-btn:hover {
+            background: var(--neon-purple);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px rgba(179, 0, 255, 0.5);
+        }
+
+        footer {
+            background: rgba(0, 10, 30, 0.95);
+            border-top: 1px solid rgba(0, 255, 255, 0.2);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer-text {
+            font-family: 'Orbitron', monospace;
+            color: var(--text-primary);
+            opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">NEURAL INTERFACE</div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">HOME</a></li>
+                    <li><a href="agent.html">AGENT</a></li>
+                    <li><a href="logs.html">LOGS</a></li>
+                    <li><a href="projects.html" class="active">PROJECTS</a></li>
+                    <li><a href="generator.html">GAME GEN</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="section">
+        <h2 class="section-title">Project Library</h2>
+        
+        <div class="category-tabs">
+            <button class="category-tab active" onclick="filterProjects('all')">ALL</button>
+            <button class="category-tab" onclick="filterProjects('games')">GAMES</button>
+            <button class="category-tab" onclick="filterProjects('tools')">TOOLS</button>
+            <button class="category-tab" onclick="filterProjects('websites')">WEBSITES</button>
+        </div>
+
+        <div class="grid-3" id="projectsGrid">
+            <div class="project-card" data-category="games">
+                <div class="project-icon">🧱</div>
+                <h3 class="project-title">Tetris Desktop</h3>
+                <p class="project-description">Classic Tetris game with modern cyberpunk styling and smooth gameplay.</p>
+                <div class="project-tags">
+                    <span class="tag">Game</span>
+                    <span class="tag">Puzzle</span>
+                    <span class="tag">Classic</span>
+                </div>
+                <button class="project-btn" onclick="window.open('file:///C:/Users/10699/Desktop/桌面俄罗斯方块.html', '_blank')">OPEN PROJECT</button>
+            </div>
+
+            <div class="project-card" data-category="games">
+                <div class="project-icon">🐍</div>
+                <h3 class="project-title">Snake Game</h3>
+                <p class="project-description">Classic Snake game with increasing speed and high score tracking.</p>
+                <div class="project-tags">
+                    <span class="tag">Game</span>
+                    <span class="tag">Arcade</span>
+                    <span class="tag">Classic</span>
+                </div>
+                <button class="project-btn" onclick="window.open('file:///C:/Users/10699/Desktop/贪吃蛇.html', '_blank')">OPEN PROJECT</button>
+            </div>
+
+            <div class="project-card" data-category="games">
+                <div class="project-icon">🧱</div>
+                <h3 class="project-title">Breakout</h3>
+                <p class="project-description">Classic brick breaker game with 5 levels and paddle controls.</p>
+                <div class="project-tags">
+                    <span class="tag">Game</span>
+                    <span class="tag">Arcade</span>
+                    <span class="tag">Classic</span>
+                </div>
+                <button class="project-btn" onclick="window.open('file:///C:/Users/10699/Desktop/打砖块.html', '_blank')">OPEN PROJECT</button>
+            </div>
+
+            <div class="project-card" data-category="games">
+                <div class="project-icon">🎯</div>
+                <h3 class="project-title">Gomoku</h3>
+                <p class="project-description">Five in a Row board game with two-player mode and undo feature.</p>
+                <div class="project-tags">
+                    <span class="tag">Game</span>
+                    <span class="tag">Board</span>
+                    <span class="tag">Strategy</span>
+                </div>
+                <button class="project-btn" onclick="window.open('file:///C:/Users/10699/Desktop/五子棋.html', '_blank')">OPEN PROJECT</button>
+            </div>
+
+            <div class="project-card" data-category="tools">
+                <div class="project-icon">🏢</div>
+                <h3 class="project-title">Pixel Studio</h3>
+                <p class="project-description">Interactive pixel art office with working areas, character, and animations.</p>
+                <div class="project-tags">
+                    <span class="tag">Interactive</span>
+                    <span class="tag">Pixel Art</span>
+                    <span class="tag">Simulator</span>
+                </div>
+                <button class="project-btn" onclick="window.open('file:///C:/Users/10699/Desktop/像素工作室_终极细节版.html', '_blank')">OPEN PROJECT</button>
+            </div>
+
+            <div class="project-card" data-category="websites">
+                <div class="project-icon">📚</div>
+                <h3 class="project-title">Portfolio V1</h3>
+                <p class="project-description">Full English portfolio with projects, games, tools, and developer info.</p>
+                <div class="project-tags">
+                    <span class="tag">Portfolio</span>
+                    <span class="tag">English</span>
+                    <span class="tag">Complete</span>
+                </div>
+                <button class="project-btn" onclick="window.open('file:///C:/Users/10699/Desktop/My-Final-English-Portfolio.html', '_blank')">OPEN PROJECT</button>
+            </div>
+
+            <div class="project-card" data-category="tools">
+                <div class="project-icon">⭐</div>
+                <h3 class="project-title">Star Office UI</h3>
+                <p class="project-description">Standalone pixel office interface with working areas and interactive character.</p>
+                <div class="project-tags">
+                    <span class="tag">UI</span>
+                    <span class="tag">Standalone</span>
+                    <span class="tag">Skill</span>
+                </div>
+                <button class="project-btn" onclick="window.open('file:///C:/Users/10699/Desktop/StarOffice_像素办公室_完整独立版.html', '_blank')">OPEN PROJECT</button>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p class="footer-text">NEURAL INTERFACE © 2026 • SYSTEM ONLINE</p>
+    </footer>
+
+    <script>
+        function filterProjects(category) {
+            const cards = document.querySelectorAll('.project-card');
+            const tabs = document.querySelectorAll('.category-tab');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
