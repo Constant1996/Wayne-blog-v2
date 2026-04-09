@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Generator - Neural Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --neon-purple: #b300ff;
+            --dark-bg: #0a0a0f;
+            --card-bg: #12121a;
+            --text-primary: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(179, 0, 255, 0.1) 0%, transparent 100%);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: all 0.3s;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--neon-cyan);
+            transition: width 0.3s;
+        }
+
+        nav a:hover::after,
+        nav a.active::after {
+            width: 100%;
+        }
+
+        nav a:hover {
+            color: var(--neon-cyan);
+        }
+
+        .section {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            color: var(--neon-cyan);
+        }
+
+        .generator-container {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            padding: 3rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .form-group {
+            display: grid;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--neon-cyan);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .difficulty-section {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(179, 0, 255, 0.2);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .difficulty-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            color: var(--neon-purple);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .difficulty-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .difficulty-item {
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .difficulty-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            color: var(--neon-purple);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+
+        .difficulty-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--neon-cyan);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin-top: 0.75rem;
+            -webkit-appearance: none;
+            background: rgba(0, 0, 0, 0.5);
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .generate-btn {
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            border: none;
+            color: var(--dark-bg);
+            padding: 1.25rem 3rem;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+        .generate-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.5), 0 0 80px rgba(255, 0, 255, 0.3);
+        }
+
+        .output-area {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--neon-cyan);
+            padding: 2rem;
+            min-height: 250px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #00ff00;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.8;
+        }
+
+        footer {
+            background: rgba(0, 10, 30, 0.95);
+            border-top: 1px solid rgba(0, 255, 255, 0.2);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer-text {
+            font-family: 'Orbitron', monospace;
+            color: var(--text-primary);
+            opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2,
+            .difficulty-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">NEURAL INTERFACE</div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">HOME</a></li>
+                    <li><a href="agent.html">AGENT</a></li>
+                    <li><a href="logs.html">LOGS</a></li>
+                    <li><a href="projects.html">PROJECTS</a></li>
+                    <li><a href="generator.html" class="active">GAME GEN</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="section">
+        <h2 class="section-title">AI Game Generator</h2>
+        
+        <div class="generator-container">
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">Game Title</label>
+                    <input type="text" class="form-input" id="gameTitle" placeholder="Enter game title...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Game Genre</label>
+                    <select class="form-select" id="gameGenre">
+                        <option value="action">Action</option>
+                        <option value="puzzle">Puzzle</option>
+                        <option value="rpg">RPG</option>
+                        <option value="simulation">Simulation</option>
+                        <option value="shooter">Shooter</option>
+                        <option value="platformer">Platformer</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Game Description</label>
+                <textarea class="form-textarea" id="gameDesc" placeholder="Describe your game concept..."></textarea>
+            </div>
+
+            <div class="difficulty-section">
+                <div class="difficulty-title">Difficulty Settings</div>
+                <div class="difficulty-grid">
+                    <div class="difficulty-item">
+                        <div class="difficulty-label">Enemy AI</div>
+                        <div class="difficulty-value" id="aiLevel">5</div>
+                        <input type="range" id="aiSlider" min="1" max="10" value="5" oninput="updateLevel('ai')">
+                    </div>
+                    <div class="difficulty-item">
+                        <div class="difficulty-label">Game Speed</div>
+                        <div class="difficulty-value" id="speedLevel">5</div>
+                        <input type="range" id="speedSlider" min="1" max="10" value="5" oninput="updateLevel('speed')">
+                    </div>
+                    <div class="difficulty-item">
+                        <div class="difficulty-label">Complexity</div>
+                        <div class="difficulty-value" id="complexityLevel">5</div>
+                        <input type="range" id="complexitySlider" min="1" max="10" value="5" oninput="updateLevel('complexity')">
+                    </div>
+                </div>
+            </div>
+
+            <button class="generate-btn" id="generateBtn">GENERATE GAME</button>
+
+            <div class="output-area" id="outputArea">
+╔════════════════════════════════════════╗
+║     AI GAME GENERATOR v1.0              ║
+╠════════════════════════════════════════╣
+║                                          ║
+║  Configure your game parameters above   ║
+║  and click GENERATE GAME to begin...    ║
+║                                          ║
+╚════════════════════════════════════════╝
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p class="footer-text">NEURAL INTERFACE © 2026 • SYSTEM ONLINE</p>
+    </footer>
+
+    <script>
+        function updateLevel(type) {
+            if (type === 'ai') {
+                document.getElementById('aiLevel').textContent = document.getElementById('aiSlider').value;
+            } else if (type === 'speed') {
+                document.getElementById('speedLevel').textContent = document.getElementById('speedSlider').value;
+            } else if (type === 'complexity') {
+                document.getElementById('complexityLevel').textContent = document.getElementById('complexitySlider').value;
+            }
+        }
+
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const title = document.getElementById('gameTitle').value || 'My Awesome Game';
+            const genre = document.getElementById('gameGenre').value;
+            const desc = document.getElementById('gameDesc').value || 'An exciting adventure game!';
+            const aiLevel = document.getElementById('aiLevel').textContent;
+            const speedLevel = document.getElementById('speedLevel').textContent;
+            const complexityLevel = document.getElementById('complexityLevel').textContent;
+
+            let gameCode = generateGame(title, genre, desc, aiLevel, speedLevel, complexityLevel);
+            downloadGame(title, gameCode);
+            
+            const output = `
+╔════════════════════════════════════════╗
+║     AI GAME GENERATOR v1.0              ║
+╠════════════════════════════════════════╣
+║                                          ║
+║  Title: ${title.substring(0, 33).padEnd(33)}║
+║  Genre: ${genre.toUpperCase().padEnd(32)}║
+║  AI Level: ${aiLevel.padEnd(29)}║
+║  Speed: ${speedLevel.padEnd(32)}║
+║  Complexity: ${complexityLevel.padEnd(26)}║
+║                                          ║
+╠════════════════════════════════════════╣
+║                                          ║
+║  Concept:                                ║
+║  ${desc.substring(0, 42).padEnd(42)}║
+║  ${desc.substring(42, 84).padEnd(42)}║
+║                                          ║
+║  [Game generated and downloaded!]        ║
+║                                          ║
+║  Check your Downloads folder!            ║
+║                                          ║
+╚════════════════════════════════════════╝
+`;
+            document.getElementById('outputArea').textContent = output;
+        });
+
+        function generateGame(title, genre, desc, ai, speed, complexity) {
+            return \`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>\${title}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            color: white;
+        }
+        h1 { 
+            font-size: 2.5rem; 
+            margin-bottom: 20px; 
+            color: #00d4ff;
+            text-shadow: 0 0 20px #00d4ff;
+        }
+        #gameCanvas {
+            border: 3px solid #00d4ff;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+            background: #000;
+        }
+        .stats {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        .controls {
+            margin-top: 30px;
+            text-align: center;
+        }
+        button {
+            padding: 15px 40px;
+            background: linear-gradient(90deg, #00d4ff, #0099cc);
+            border: none;
+            color: #000;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 10px;
+        }
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+        .instructions {
+            margin-top: 20px;
+            color: #aaa;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 \${title}</h1>
+    
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-label">Score</div>
+            <div class="stat-value" id="score">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Lives</div>
+            <div class="stat-value" id="lives">3</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Level</div>
+            <div class="stat-value" id="level">1</div>
+        </div>
+    </div>
+    
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    
+    <div class="controls">
+        <button onclick="resetGame()">🔄 Restart</button>
+        <button onclick="togglePause()">⏯️ Pause</button>
+    </div>
+    
+    <div class="instructions">
+        <p>Use Arrow Keys or WASD to move | SPACE to shoot</p>
+        <p>Genre: \${genre} | AI: \${ai} | Speed: \${speed} | Complexity: \${complexity}</p>
+        <p style="margin-top:10px; color:#00d4ff;">\${desc}</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let player, enemies, bullets, particles;
+        let score, lives, level, gameLoop, isPaused, gameOver;
+        let keys = {};
+        
+        function init() {
+            player = { x: 300, y: 350, width: 40, height: 40, speed: \${5 + parseInt(speed)} };
+            enemies = [];
+            bullets = [];
+            particles = [];
+            score = 0;
+            lives = 3;
+            level = 1;
+            isPaused = false;
+            gameOver = false;
+            
+            updateUI();
+            spawnEnemies();
+            startGame();
+        }
+        
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('lives').textContent = lives;
+            document.getElementById('level').textContent = level;
+        }
+        
+        function spawnEnemies() {
+            const count = 3 + level + Math.floor(parseInt(ai)/2);
+            for (let i = 0; i < count; i++) {
+                enemies.push({
+                    x: Math.random() * (canvas.width - 50),
+                    y: Math.random() * 150,
+                    width: 35,
+                    height: 35,
+                    dx: (Math.random() - 0.5) * (\${2 + parseInt(speed)/2}),
+                    dy: Math.random() * 0.5 + 0.3,
+                    color: \`hsl(\${Math.random() * 360}, 70%, 60%)\`
+                });
+            }
+        }
+        
+        function draw() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            for (let i = 0; i < 50; i++) {
+                ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 2, 2);
+            }
+            
+            particles.forEach((p, i) => {
+                p.x += p.dx;
+                p.y += p.dy;
+                p.life--;
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life / 30;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+                if (p.life <= 0) particles.splice(i, 1);
+            });
+            ctx.globalAlpha = 1;
+            
+            enemies.forEach(e => {
+                ctx.fillStyle = e.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = e.color;
+                ctx.fillRect(e.x, e.y, e.width, e.height);
+            });
+            ctx.shadowBlur = 0;
+            
+            bullets.forEach(b => {
+                ctx.fillStyle = '#00d4ff';
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#00d4ff';
+                ctx.fillRect(b.x, b.y, b.width, b.height);
+            });
+            ctx.shadowBlur = 0;
+            
+            ctx.fillStyle = '#00d4ff';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#00d4ff';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            ctx.shadowBlur = 0;
+            
+            if (isPaused) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 40px Segoe UI';
+                ctx.textAlign = 'center';
+                ctx.fillText('PAUSED', canvas.width / 2, canvas.height / 2);
+            }
+            
+            if (gameOver) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#ff4444';
+                ctx.font = 'bold 50px Segoe UI';
+                ctx.textAlign = 'center';
+                ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 30);
+                ctx.fillStyle = '#fff';
+                ctx.font = '24px Segoe UI';
+                ctx.fillText('Score: ' + score, canvas.width / 2, canvas.height / 2 + 20);
+            }
+        }
+        
+        function update() {
+            if (isPaused || gameOver) return;
+            
+            if (keys['ArrowLeft'] || keys['a']) player.x -= player.speed;
+            if (keys['ArrowRight'] || keys['d']) player.x += player.speed;
+            if (keys['ArrowUp'] || keys['w']) player.y -= player.speed;
+            if (keys['ArrowDown'] || keys['s']) player.y += player.speed;
+            
+            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+            player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
+            
+            enemies.forEach((e, i) => {
+                e.x += e.dx;
+                e.y += e.dy;
+                if (e.x <= 0 || e.x >= canvas.width - e.width) e.dx *= -1;
+                if (e.y > canvas.height) {
+                    e.y = -50;
+                    e.x = Math.random() * (canvas.width - 50);
+                }
+                
+                if (checkCollision(player, e)) {
+                    for (let j = 0; j < 10; j++) {
+                        particles.push({
+                            x: e.x + e.width/2,
+                            y: e.y + e.height/2,
+                            dx: (Math.random() - 0.5) * 8,
+                            dy: (Math.random() - 0.5) * 8,
+                            color: e.color,
+                            size: 5,
+                            life: 30
+                        });
+                    }
+                    enemies.splice(i, 1);
+                    lives--;
+                    updateUI();
+                    if (lives <= 0) gameOver = true;
+                }
+            });
+            
+            bullets.forEach((b, bi) => {
+                b.y -= 10;
+                enemies.forEach((e, ei) => {
+                    if (checkCollision(b, e)) {
+                        for (let j = 0; j < 15; j++) {
+                            particles.push({
+                                x: e.x + e.width/2,
+                                y: e.y + e.height/2,
+                                dx: (Math.random() - 0.5) * 10,
+                                dy: (Math.random() - 0.5) * 10,
+                                color: e.color,
+                                size: 6,
+                                life: 30
+                            });
+                        }
+                        enemies.splice(ei, 1);
+                        bullets.splice(bi, 1);
+                        score += 10 * level;
+                        updateUI();
+                    }
+                });
+                if (b.y < 0) bullets.splice(bi, 1);
+            });
+            
+            if (enemies.length === 0) {
+                level++;
+                updateUI();
+                spawnEnemies();
+            }
+        }
+        
+        function checkCollision(a, b) {
+            return a.x < b.x + b.width &&
+                   a.x + a.width > b.x &&
+                   a.y < b.y + b.height &&
+                   a.y + a.height > b.y;
+        }
+        
+        function shoot() {
+            if (bullets.length < \${3 + Math.floor(parseInt(complexity)/3)}) {
+                bullets.push({
+                    x: player.x + player.width/2 - 3,
+                    y: player.y,
+                    width: 6,
+                    height: 15
+                });
+            }
+        }
+        
+        function gameStep() {
+            update();
+            draw();
+        }
+        
+        function startGame() {
+            if (gameLoop) clearInterval(gameLoop);
+            gameLoop = setInterval(gameStep, 1000 / 60);
+        }
+        
+        function resetGame() {
+            init();
+        }
+        
+        function togglePause() {
+            isPaused = !isPaused;
+        }
+        
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (!gameOver) shoot();
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+        
+        init();
+    </script>
+</body>
+</html>\`;
+        }
+
+        function downloadGame(title, content) {
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = title.replace(/[^a-zA-Z0-9]/g, '_') + '.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
