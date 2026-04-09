@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Logs - Neural Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --neon-purple: #b300ff;
+            --dark-bg: #0a0a0f;
+            --card-bg: #12121a;
+            --text-primary: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(179, 0, 255, 0.1) 0%, transparent 100%);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: all 0.3s;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--neon-cyan);
+            transition: width 0.3s;
+        }
+
+        nav a:hover::after,
+        nav a.active::after {
+            width: 100%;
+        }
+
+        nav a:hover {
+            color: var(--neon-cyan);
+        }
+
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            color: var(--neon-cyan);
+        }
+
+        .log-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .log-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .log-card:hover {
+            transform: translateX(10px);
+            border-color: var(--neon-pink);
+            box-shadow: -5px 0 20px rgba(255, 0, 255, 0.2);
+        }
+
+        .log-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, var(--neon-cyan), var(--neon-pink));
+        }
+
+        .log-date {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.4rem;
+            color: var(--neon-pink);
+            margin-bottom: 0.5rem;
+        }
+
+        .log-day {
+            font-size: 1rem;
+            color: var(--neon-purple);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .log-preview {
+            margin-top: 1rem;
+            padding-left: 1rem;
+            border-left: 2px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .log-preview-item {
+            color: var(--text-primary);
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .log-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .log-detail-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--neon-cyan);
+            max-width: 900px;
+            max-height: 80vh;
+            overflow-y: auto;
+            width: 100%;
+            padding: 3rem;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            color: var(--neon-pink);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            color: var(--neon-cyan);
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .modal-section {
+            margin-bottom: 2rem;
+        }
+
+        .modal-section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            color: var(--neon-pink);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .modal-content-text {
+            line-height: 1.8;
+        }
+
+        footer {
+            background: rgba(0, 10, 30, 0.95);
+            border-top: 1px solid rgba(0, 255, 255, 0.2);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer-text {
+            font-family: 'Orbitron', monospace;
+            color: var(--text-primary);
+            opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">NEURAL INTERFACE</div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">HOME</a></li>
+                    <li><a href="agent.html">AGENT</a></li>
+                    <li><a href="logs.html" class="active">LOGS</a></li>
+                    <li><a href="projects.html">PROJECTS</a></li>
+                    <li><a href="generator.html">GAME GEN</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="section">
+        <h2 class="section-title">Daily Logs</h2>
+        <div class="log-list">
+            <div class="log-card" onclick="openLog('2026-04-09')">
+                <div class="log-date">2026.04.09</div>
+                <div class="log-day">Thursday</div>
+                <div class="log-preview">
+                    <div class="log-preview-item">• Deployed Star Office UI skill to desktop</div>
+                    <div class="log-preview-item">• Created complete personal blog portfolio</div>
+                    <div class="log-preview-item">• Built multi-page blog architecture</div>
+                </div>
+            </div>
+            <div class="log-card" onclick="openLog('2026-04-08')">
+                <div class="log-date">2026.04.08</div>
+                <div class="log-day">Wednesday</div>
+                <div class="log-preview">
+                    <div class="log-preview-item">• Desktop organization and file sorting</div>
+                    <div class="log-preview-item">• Delta Force HTML game creation</div>
+                    <div class="log-preview-item">• Pixel Studio development</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="log-detail-modal" id="logModal">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeLog()">&times;</div>
+            <div class="modal-title" id="modalTitle">Log Details</div>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p class="footer-text">NEURAL INTERFACE © 2026 • SYSTEM ONLINE</p>
+    </footer>
+
+    <script>
+        const logData = {
+            '2026-04-09': {
+                title: '2026.04.09 • Thursday',
+                sections: [
+                    {
+                        title: 'Tasks Completed',
+                        content: '• Deployed Star Office UI skill to desktop<br>• Created complete personal blog portfolio with cyberpunk aesthetic<br>• Fixed navigation and link issues in previous versions<br>• Built multi-page blog architecture in Blog/ directory'
+                    },
+                    {
+                        title: 'Files Created',
+                        content: '• Neural-Interface-Blog.html (27.9 KB)<br>• Multiple Pixel Studio versions<br>• Game portfolio with 7+ games'
+                    }
+                ]
+            },
+            '2026-04-08': {
+                title: '2026.04.08 • Wednesday',
+                sections: [
+                    {
+                        title: 'Major Projects',
+                        content: '• Desktop organization and file sorting<br>• Delta Force HTML game creation<br>• Pixel Studio development<br>• Portfolio website iterations'
+                    },
+                    {
+                        title: 'Highlights',
+                        content: '• Created desktop Russian Tetris game<br>• Organized desktop files into folders<br>• Built multiple versions of Delta Force game'
+                    }
+                ]
+            }
+        };
+
+        function openLog(date) {
+            const log = logData[date];
+            if (!log) return;
+
+            document.getElementById('modalTitle').textContent = log.title;
+            let contentHTML = '';
+            log.sections.forEach(section => {
+                contentHTML += `
+                    <div class="modal-section">
+                        <div class="modal-section-title">${section.title}</div>
+                        <div class="modal-content-text">${section.content}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('modalContent').innerHTML = contentHTML;
+            document.getElementById('logModal').classList.add('active');
+        }
+
+        function closeLog() {
+            document.getElementById('logModal').classList.remove('active');
+        }
+
+        document.getElementById('logModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLog();
+            }
+        });
+    </script>
+</body>
+</html>
