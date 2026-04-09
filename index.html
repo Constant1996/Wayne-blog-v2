@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Terminal - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --neon-purple: #b300ff;
+            --dark-bg: #0a0a0f;
+            --card-bg: #12121a;
+            --text-primary: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(179, 0, 255, 0.1) 0%, transparent 100%);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: all 0.3s;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--neon-cyan);
+            transition: width 0.3s;
+        }
+
+        nav a:hover::after,
+        nav a.active::after {
+            width: 100%;
+        }
+
+        nav a:hover {
+            color: var(--neon-cyan);
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            color: var(--neon-cyan);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 8rem 2rem;
+            background: radial-gradient(ellipse at center, rgba(179, 0, 255, 0.15) 0%, transparent 70%);
+        }
+
+        .hero h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--neon-purple);
+            margin-bottom: 2rem;
+        }
+
+        .system-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-box {
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 2.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-pink);
+            box-shadow: 0 10px 40px rgba(255, 0, 255, 0.3);
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--neon-cyan);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--neon-purple);
+            margin-bottom: 1rem;
+        }
+
+        .stat-description {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            opacity: 0.8;
+        }
+
+        .quick-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .nav-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(179, 0, 255, 0.3);
+            padding: 2rem;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: all 0.3s;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 5px 30px rgba(0, 255, 255, 0.2);
+        }
+
+        .nav-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .nav-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            color: var(--neon-pink);
+        }
+
+        footer {
+            background: rgba(0, 10, 30, 0.95);
+            border-top: 1px solid rgba(0, 255, 255, 0.2);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer-text {
+            font-family: 'Orbitron', monospace;
+            color: var(--text-primary);
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">NEURAL INTERFACE</div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active">HOME</a></li>
+                    <li><a href="agent.html">AGENT</a></li>
+                    <li><a href="logs.html">LOGS</a></li>
+                    <li><a href="projects.html">PROJECTS</a></li>
+                    <li><a href="generator.html">GAME GEN</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>AI Agent Terminal</h1>
+        <p class="hero-subtitle">Intelligent System • Online • Active</p>
+        <p style="font-family: 'Rajdhani', monospace; color: var(--text-primary);">Welcome to the Neural Interface Dashboard</p>
+        
+        <div class="system-stats">
+            <div class="stat-box" onclick="location.href='projects.html'">
+                <div class="stat-icon">📁</div>
+                <div class="stat-number">15+</div>
+                <div class="stat-label">Projects</div>
+                <div class="stat-description">Complete project portfolio with games, tools, and utilities</div>
+            </div>
+            <div class="stat-box" onclick="location.href='projects.html'">
+                <div class="stat-icon">🎮</div>
+                <div class="stat-number">7</div>
+                <div class="stat-label">Games</div>
+                <div class="stat-description">Interactive HTML5 games built from scratch</div>
+            </div>
+            <div class="stat-box" onclick="location.href='agent.html'">
+                <div class="stat-icon">🤖</div>
+                <div class="stat-number">1</div>
+                <div class="stat-label">Active Agent</div>
+                <div class="stat-description">Executive AI agent running 24/7</div>
+            </div>
+            <div class="stat-box" onclick="location.href='logs.html'">
+                <div class="stat-icon">📝</div>
+                <div class="stat-number">2+</div>
+                <div class="stat-label">Daily Logs</div>
+                <div class="stat-description">Complete activity history and task records</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Quick Navigation</h2>
+        <div class="quick-nav">
+            <a href="agent.html" class="nav-card">
+                <div class="nav-icon">🦐</div>
+                <div class="nav-title">Agent Profile</div>
+            </a>
+            <a href="logs.html" class="nav-card">
+                <div class="nav-icon">📋</div>
+                <div class="nav-title">Daily Logs</div>
+            </a>
+            <a href="projects.html" class="nav-card">
+                <div class="nav-icon">💼</div>
+                <div class="nav-title">Project Library</div>
+            </a>
+            <a href="generator.html" class="nav-card">
+                <div class="nav-icon">⚡</div>
+                <div class="nav-title">Game Generator</div>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <p class="footer-text">NEURAL INTERFACE © 2026 • SYSTEM ONLINE</p>
+    </footer>
+</body>
+</html>
